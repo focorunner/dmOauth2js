@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html> 
+   <head> 
+     <title>DM Client-side OAuth2 Example</title> 
+   </head> 
+   <body> 
+   <script> 
+	var appID = "YOUR DAILYMILE API KEY GOES HERE"; //request here: http://www.dailymile.com/api/consumers/new
+	
+	// IMPORTANT NOTE: the complete url, including server name, port, path, and name of this file must be entered in your API Key settings on dailymile.com. A mismatch between what is entered there will result in a callback_uri mismatch error.
+	// If you put these scripts file on your webhost at http://www.mywebhost.com in the root web folder, your callback uri would be http://www.mywebhost.com/dmOauth2.html.
+
+	// function to set the cookie
+	function setCookie(c_name,value,exdays) {
+		var exdate=new Date();
+		exdate.setDate(exdate.getDate() + exdays);
+		var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+		document.cookie=c_name + "=" + c_value;
+	}
+
+	// checks for whether a hash was appended to url. if not, beings authorization with DM.
+	if (window.location.hash.length == 0) {
+		var path = 'https://api.dailymile.com/oauth/authorize?';
+		var queryParams = ['client_id=' + appID,
+			'redirect_uri=' + window.location,
+			'response_type=token'];
+		var query = queryParams.join('&');
+		var url = path + query;
+		window.open(url,"_self");
+	} 
+	
+	// if hash was present, authorization is done. grabs authrization token from hash and stores it as cookie, and reloads index.php as basic demo of how to use the authorization token and JSON from Dailymile API responses in PHP.
+	else {
+		var accessToken = window.location.hash.substring(1);
+		var ind = accessToken.lastIndexOf('=');
+		var tokenToStore = accessToken.substring(ind + 1);
+		setCookie('dmauth',tokenToStore,2);
+		window.open('index.php',"_self");
+	}
+
+	</script> 
+	
+</body> 
+  </html>
